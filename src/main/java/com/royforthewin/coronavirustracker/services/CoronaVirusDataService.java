@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -43,7 +45,12 @@ public class CoronaVirusDataService {
             LocationStats locationStats = new LocationStats();
             locationStats.setState(record.get("Province/State"));
             locationStats.setCountry(record.get("Country/Region"));
-            int latestCases = Integer.parseInt(record.get(record.size() - 1));
+
+            String latestCasesString = record.get(record.size() - 1);
+            int latestCases = StringUtils.isEmpty(latestCasesString) ?  0: Integer.parseInt(latestCasesString);
+
+
+            //int latestCases = Integer.parseInt(record.get(record.size()  - 1));
             int prevDayCases = Integer.parseInt(record.get(record.size() - 2));
             locationStats.setLatestTotalCases(latestCases);
             locationStats.setDiffFromPrevDay(latestCases - prevDayCases);
